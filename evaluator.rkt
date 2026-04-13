@@ -5,17 +5,18 @@
 ;; CSC3311 MINI-SCHEME EVALUATOR SKELETON
 ;; ====================================================
 
-;; THE BRAIN: Team A & D
+;; THE BRAIN: Team A & D, Evaluate expressions
 (define (mini-eval exp env)
-  (cond ((number? exp) exp)
-        ;; Add more cases here (Team A)
+  (cond ((number? exp) exp)                 ; Handle numbers
+        ((symbol? exp) (lookup-variable-value exp env)) ; Handle variables
+        ;; Team A will add more cases (if, lambda, etc.) here
         (else (error "Unknown expression type -- MINI-EVAL" exp))))
 
-;; THE HANDS: Team A
+;; THE HANDS: Team A, Apllies procedures to arguments
 (define (mini-apply procedure arguments)
   (cond ((primitive-procedure? procedure)
          (apply-primitive-procedure procedure arguments))
-        ;; Add compound procedure logic here
+        ;; Team A will add compound-procedure logic here
         (else (error "Unknown procedure type -- MINI-APPLY" procedure))))
 
 ;; THE MEMORY: Team B
