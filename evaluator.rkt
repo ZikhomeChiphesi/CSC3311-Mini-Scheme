@@ -133,24 +133,36 @@
 (define (procedure-environment p) (cadddr p))
 
 ;; =========================
-;; PRIMITIVES
+;; PRIMITIVES (TASK 5 FIXED)
 ;; =========================
 
-(define (make-primitive name proc)
-  (list 'primitive name proc))
+(define (make-primitive proc)
+  (list 'primitive proc))
 
 (define primitive-procedures
   (list
-   (make-primitive '+ +)
-   (make-primitive '- -)
-   (make-primitive '* *)
-   (make-primitive '/ /)))
+   (list '+ +)
+   (list '- -)
+   (list '* *)
+   (list '/ /)
+   (list '= =)))
+
+(define (primitive-procedure-names)
+  (map car primitive-procedures))
+
+(define (primitive-procedure-objects)
+  (map (lambda (p)
+         (make-primitive (cadr p)))
+       primitive-procedures))
 
 (define (primitive-procedure? proc)
   (tagged-list? proc 'primitive))
 
+(define (primitive-implementation proc)
+  (cadr proc))
+
 (define (apply-primitive-procedure proc args)
-  (apply (caddr proc) args))
+  (apply (primitive-implementation proc) args))
 
 ;; =========================
 ;; ENVIRONMENT (RIBCAGE)
@@ -169,6 +181,10 @@
 
 (define (frame-values frame)
   (cdr frame))
+
+;; =========================
+;; LOOKUP
+;; =========================
 
 (define (lookup-variable-value var env)
   (define (env-loop env)
@@ -262,15 +278,11 @@
   (not (eq? x false)))
 
 (define (eval-sequence exps env)
-  (cond ((last-exp? exps)
-         (mini-eval (first-exp exps) env))
+  (cond ((null? (cdr exps))
+         (mini-eval (car exps) env))
         (else
-         (mini-eval (first-exp exps) env)
-         (eval-sequence (rest-exps exps) env))))
-
-(define (first-exp seq) (car seq))
-(define (rest-exps seq) (cdr seq))
-(define (last-exp? seq) (null? (cdr seq)))
+         (mini-eval (car exps) env)
+         (eval-sequence (cdr exps) env))))
 
 ;; =========================
 ;; ENV HELPERS
@@ -281,14 +293,20 @@
        (eq? (car exp) tag)))
 
 ;; =========================
-;; GLOBAL ENVIRONMENT
+;; GLOBAL ENVIRONMENT (TASK 5 COMPLETE)
 ;; =========================
 
+(define the-empty-environment '())
+
 (define the-global-environment
-  (list
-   (make-frame
-    (map (lambda (p) (cadr p)) primitive-procedures)
-    primitive-procedures)))
+  (extend-environment
+   (primitive-procedure-names)
+   (primitive-procedure-objects)
+   the-empty-environment))
+
+;; add true/false
+(eval-definition '(define true #t) the-global-environment)
+(eval-definition '(define false #f) the-global-environment)
 
 ;; =========================
 ;; TESTS
@@ -297,6 +315,5 @@
 (mini-eval '(+ 2 3) the-global-environment)
 (mini-eval '(* 4 5) the-global-environment)
 
-;; TASK 4 TESTS
 (mini-eval '(let ((x 5)) (+ x 3)) the-global-environment)
 (mini-eval '(let ((x 2) (y 3)) (* x y)) the-global-environment)
