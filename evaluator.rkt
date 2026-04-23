@@ -1,33 +1,230 @@
 #lang sicp
-#lang sicp
 
-;; ====================================================
-;; CSC3311 MINI-SCHEME EVALUATOR SKELETON
-;; ====================================================
+(define (self-evaluating? exp)
+  (or (number? exp)
+      (string? exp)
+      (boolean? exp)))
+(define false #f)
 
-;; THE BRAIN: Team A & D, Evaluate expressions
+(define (variable? exp)
+  (symbol? exp))
+
+(define (quoted? exp)
+  (tagged-list? exp 'quote))
+
+(define (text-of-quotation exp)
+  (cadr exp))
+
+(define (assignment? exp)
+  (tagged-list? exp 'set!))
+
+(define (definition? exp)
+  (tagged-list? exp 'define))
+
+(define (if? exp)
+  (tagged-list? exp 'if))
+
+(define (lambda? exp)
+  (tagged-list? exp 'lambda))
+
+(define (begin? exp)
+  (tagged-list? exp 'begin))
+
+(define (application? exp)
+  (pair? exp))
+
+(define (operator exp)
+  (car exp))
+
+(define (operands exp)
+  (cdr exp))
+
+(define (lambda-parameters exp)
+  (cadr exp))
+
+(define (lambda-body exp)
+  (cddr exp))
+
+(define (begin-actions exp)
+  (cdr exp))
+
+(define (lookup-variable-value var env)
+  (cond ((null? env)
+         (error "Unbound variable" var))
+        (else
+         (let ((frame (car env)))
+           (let ((binding (assoc var frame)))
+             (if binding
+                 (cdr binding)
+                 (lookup-variable-value var (cdr env))))))))
+
+(define (assignment-variable exp)
+  (cadr exp))
+
+(define (assignment-value exp)
+  (caddr exp))
+
+(define (eval-assignment exp env)
+  (set-variable-value!
+   (assignment-variable exp)
+   (mini-eval (assignment-value exp) env)
+   env)
+  'ok)
+
+(define (set-variable-value! var val env)
+  (cond ((null? env)
+         (error "Unbound variable -- SET!" var))
+        (else
+         (let ((frame (car env)))
+           (let ((binding (assoc var frame)))
+             (if binding
+                 (set-cdr! binding val)
+                 (set-variable-value! var val (cdr env))))))))
+
+(define (definition-variable exp)
+  (cadr exp))
+
+(define (definition-value exp)
+  (caddr exp))
+
+(define (eval-definition exp env)
+  (define-variable!
+   (definition-variable exp)
+   (mini-eval (definition-value exp) env)
+   env)
+  'ok)
+
+(define (define-variable! var val env)
+  (let ((frame (car env)))
+    (let ((binding (assoc var frame)))
+      (if binding
+          (set-cdr! binding val)
+          (set-car! env (cons (cons var val) frame))))))
+
+(define (if-predicate exp)
+  (cadr exp))
+
+(define (if-consequent exp)
+  (caddr exp))
+
+(define (if-alternative exp)
+  (if (not (null? (cdddr exp)))
+      (cadddr exp)
+      'false))
+
+(define (eval-if exp env)
+  (if (true? (mini-eval (if-predicate exp) env))
+      (mini-eval (if-consequent exp) env)
+      (mini-eval (if-alternative exp) env)))
+
+(define (true? x)
+  (not (eq? x false)))
+
+
 (define (mini-eval exp env)
-  (cond ((number? exp) exp)                 ; Handle numbers
-        ((symbol? exp) (lookup-variable-value exp env)) ; Handle variables
-        ;; Team A will add more cases (if, lambda, etc.) here
-        (else (error "Unknown expression type -- MINI-EVAL" exp))))
+  (cond ((self-evaluating? exp) exp)
+        ((variable? exp) (lookup-variable-value exp env))
+        ((quoted? exp) (text-of-quotation exp))
+        ((assignment? exp) (eval-assignment exp env))
+        ((definition? exp) (eval-definition exp env))
+        ((if? exp) (eval-if exp env))
+        ((lambda? exp)
+         (make-procedure (lambda-parameters exp)
+                         (lambda-body exp)
+                         env))
+        ((begin? exp)
+         (eval-sequence (begin-actions exp) env))
+        ((application? exp)
+         (mini-apply (mini-eval (operator exp) env)
+                     (list-of-values (operands exp) env)))
+        (else (error "Unknown expression type -- EVAL" exp))))
 
-;; THE HANDS: Team A, Apllies procedures to arguments
+(define (list-of-values exps env)
+  (if (null? exps)
+      '()
+      (cons (mini-eval (car exps) env)
+            (list-of-values (cdr exps) env))))
+
 (define (mini-apply procedure arguments)
   (cond ((primitive-procedure? procedure)
          (apply-primitive-procedure procedure arguments))
-        ;; Team A will add compound-procedure logic here
-        (else (error "Unknown procedure type -- MINI-APPLY" procedure))))
+        ((compound-procedure? procedure)
+         (eval-sequence
+          (procedure-body procedure)
+          (extend-environment
+           (procedure-parameters procedure)
+           arguments
+           (procedure-environment procedure))))
+        (else
+         (error "Unknown procedure type -- APPLY" procedure))))
 
-;; THE MEMORY: Team B
+(define (make-procedure parameters body env)
+  (list 'procedure parameters body env))
+
+(define (compound-procedure? p)
+  (tagged-list? p 'procedure))
+
+(define (procedure-parameters p)
+  (cadr p))
+
+(define (procedure-body p)
+  (caddr p))
+
+(define (procedure-environment p)
+  (cadddr p))
+
+(define primitive-procedures
+  (list
+   (list 'car car)
+   (list 'cdr cdr)
+   (list 'cons cons)
+   (list 'null? null?)
+   (list '+ +)
+   (list '- -)
+   (list '* *)
+   (list '/ /)))
+
+(define (primitive-procedure? proc)
+  (tagged-list? proc 'primitive))
+
+(define (primitive-implementation proc)
+  (cadr proc))
+
+(define (apply-primitive-procedure proc args)
+  (apply (primitive-implementation proc) args))
+
+(define (setup-primitives)
+  (map (lambda (p)
+         (list 'primitive (cadr p)))
+       primitive-procedures))
+
+(define (tagged-list? exp tag)
+  (and (pair? exp)
+       (eq? (car exp) tag)))
+
 (define (extend-environment vars vals base-env)
-  'todo-team-b)
+  (if (= (length vars) (length vals))
+      (cons (map cons vars vals) base-env)
+      (error "Incorrect number of arguments supplied")))
 
-;; THE WORLD: Team C
-(define the-global-environment '()) 
+(define (eval-sequence exps env)
+  (cond ((last-exp? exps)
+         (mini-eval (first-exp exps) env))
+        (else
+         (mini-eval (first-exp exps) env)
+         (eval-sequence (rest-exps exps) env))))
 
-;; ====================================================
-;; HELPER FUNCTIONS (To be filled)
-;; ====================================================
-(define (primitive-procedure? proc) (tagged-list? proc 'primitive))
-(define (tagged-list? exp tag) (if (pair? exp) (eq? (car exp) tag) false))
+(define (first-exp seq) (car seq))
+(define (rest-exps seq) (cdr seq))
+(define (last-exp? seq) (null? (cdr seq)))
+
+(define the-global-environment
+  (list
+   (list
+    (cons '+ (list 'primitive +))
+    (cons '- (list 'primitive -))
+    (cons '* (list 'primitive *))
+    (cons '/ (list 'primitive /)))))
+
+(mini-eval '(+ 2 3) the-global-environment)
+(mini-eval '(* 4 5) the-global-environment)

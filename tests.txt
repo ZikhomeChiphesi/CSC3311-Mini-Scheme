@@ -1,0 +1,7 @@
+Level 1 (Numbers): 5 (Should return 5)
+
+Level 2 (Basic Math): (+ 5 5) (Should return 10)
+
+Level 3 (Variables): (define x 10) x (Should return 10)
+
+Level 4 (The Big One): The make-adder code.
