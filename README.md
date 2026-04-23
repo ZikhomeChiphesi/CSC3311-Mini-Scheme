@@ -1,17 +1,15 @@
 # CSC3311-Mini-Scheme
-📘 Mini-Scheme Evaluator — SICP Lab Submission
-👨‍💻 Author
+📘 **Mini-Scheme Evaluator — SICP Lab Submission**
 
+👨‍💻 **Author**
 Zikhome Chiphesi
 
-📌 Project Overview
-
+📌 **Project Overview**
 This project implements a Mini-Scheme evaluator in Racket (#lang sicp) based on concepts from Structure and Interpretation of Computer Programs (SICP) Chapter 4.1.
-
 The evaluator supports a working eval–apply cycle, lexical scoping, and a basic environment model, allowing evaluation of Scheme-like expressions.
 
-⚙️ Features Implemented
-🧠 Core Evaluator
+⚙️ **Features Implemented**
+🧠 **Core Evaluator**
 Expression dispatcher (mini-eval)
 Handles:
 self-evaluating expressions
@@ -28,7 +26,8 @@ mini-apply supports:
 primitive procedures
 compound (user-defined) procedures
 Proper environment extension during function calls
-🌳 Environment Model
+
+🌳 **Environment Model**
 Frame-based (ribcage) environment structure
 Implemented:
 extend-environment
@@ -81,6 +80,7 @@ Load evaluator
 Run test expressions using:
 
 (mini-eval '<expression> the-global-environment)
+
 📂 File Structure
 evaluator.rkt   → Full Mini-Scheme interpreter
 README.md       → This documentation
@@ -91,6 +91,5 @@ README.md       → This documentation
 ✔ Lexical scoping verified
 ✔ Global environment initialized
 
-🏁 Conclusion
-
+🏁 **Conclusion**
 This project successfully implements a working Mini-Scheme interpreter with lexical scoping, environment handling, and a complete eval-apply cycle inspired by SICP.
