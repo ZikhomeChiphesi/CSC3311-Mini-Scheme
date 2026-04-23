@@ -11,6 +11,9 @@
 
 (define false #f)
 
+(define (let? exp)
+  (tagged-list? exp 'let))
+
 (define (variable? exp)
   (symbol? exp))
 
@@ -47,6 +50,28 @@
 (define (begin-actions exp) (cdr exp))
 
 ;; =========================
+;; LET SUPPORT (TASK 4)
+;; =========================
+
+(define (let-bindings exp)
+  (cadr exp))
+
+(define (let-body exp)
+  (cddr exp))
+
+(define (let-vars exp)
+  (map car (let-bindings exp)))
+
+(define (let-vals exp)
+  (map cadr (let-bindings exp)))
+
+(define (let->combination exp)
+  (cons (cons 'lambda
+              (cons (let-vars exp)
+                    (let-body exp)))
+        (let-vals exp)))
+
+;; =========================
 ;; EVALUATOR CORE
 ;; =========================
 
@@ -57,6 +82,8 @@
         ((assignment? exp) (eval-assignment exp env))
         ((definition? exp) (eval-definition exp env))
         ((if? exp) (eval-if exp env))
+        ((let? exp)
+         (mini-eval (let->combination exp) env))
         ((lambda? exp)
          (make-procedure (lambda-parameters exp)
                          (lambda-body exp)
@@ -269,3 +296,7 @@
 
 (mini-eval '(+ 2 3) the-global-environment)
 (mini-eval '(* 4 5) the-global-environment)
+
+;; TASK 4 TESTS
+(mini-eval '(let ((x 5)) (+ x 3)) the-global-environment)
+(mini-eval '(let ((x 2) (y 3)) (* x y)) the-global-environment)
