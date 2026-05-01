@@ -10,6 +10,89 @@ SICP Laboratory Practical Submission
 6. Memory Mupotola - 2023038111
 7. Samuel Musonda - 2023001285
 
+## Verification Questions — Model Answers
+
+---
+
+### 1. In the `add5` call, where is the value of `x` stored?
+
+The value of `x` is stored in the **environment frame created when the procedure `(make-adder x)` is evaluated**.
+
+When `make-adder` is called, it creates a **compound procedure** that captures its defining environment. This environment contains a frame where `x` is bound to its value (e.g., `5`).
+
+When `(add5 10)` is later evaluated:
+
+* A new frame is created for parameter `y`
+* The procedure still has access to the **captured environment where `x = 5`**
+* This is what enables **lexical scoping**
+
+Therefore, `x` is stored in the **closure environment of the returned procedure**.
+
+---
+
+### 2. What happens in your environment if you try to `(set! z 10)` before defining `z`?
+
+The evaluator will raise an error:
+
+```
+Unbound variable -- SET!
+```
+
+This happens because `set!` does not create new variables. It only modifies **existing bindings** in the environment.
+
+The evaluator searches all frames in the environment chain:
+
+* If `z` is not found in any frame → an error is thrown
+* This enforces strict variable binding rules
+
+Therefore, attempting to assign to an undefined variable results in an **unbound variable error**.
+
+---
+
+###  3. Modify your `eval-if` to support a “one-armed if” (optional else clause)
+
+The evaluator already supports a **one-armed if** through the following implementation:
+
+```scheme
+(define (if-alternative exp)
+  (if (not (null? (cdddr exp)))
+      (cadddr exp)
+      false))
+```
+
+### Behaviour:
+
+* If an `else` clause is provided → it is evaluated normally
+* If no `else` clause exists → the expression evaluates to `false`
+
+#### Example:
+
+```scheme
+(if (> 5 3)
+    10)
+```
+
+Result: `10`
+
+```scheme
+(if (< 5 3)
+    10)
+```
+
+Result: `false`
+
+---
+
+#### Summary
+
+The evaluator correctly supports:
+
+* Optional else clauses in conditionals
+* Strict variable binding rules (`set!`)
+* Lexical scoping via closure environments
+
+These behaviors demonstrate correct implementation of core SICP evaluation principles.
+
 **Author**
 Zikhome Chiphesi
 
