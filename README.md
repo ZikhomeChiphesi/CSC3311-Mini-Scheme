@@ -14,7 +14,7 @@ SICP Laboratory Practical Submission
 Zikhome Chiphesi
 
   **Project Overview**
-This project implements a Mini-Scheme evaluator in Racket using #lang sicp, based on concepts from Structure and Interpretation of Computer Programs (SICP), Chapter 4.1.
+  This project implements a Mini-Scheme evaluator in Racket using #lang sicp, based on concepts from Structure and Interpretation of Computer Programs (SICP), Chapter 4.1.
 The evaluator models the eval–apply cycle, supports lexical scoping, and implements a frame-based environment system, enabling the execution of core Scheme expressions.
 
   **Features Implemented**
@@ -36,7 +36,7 @@ Handles procedure execution by distinguishing between:
 - Compound procedures (user-defined functions)
 Ensures correct environment extension during function calls.
 
-  **Environment Model**
+ **Environment Model**
 Implements a ribcage (frame-based) environment structure:
 - extend-environment for creating new frames
 - Variable lookup across environment chains
@@ -45,29 +45,32 @@ Implements a ribcage (frame-based) environment structure:
 - Fully supports lexical scoping, where procedures retain access to the environment in which they were defined.
 
   **Derived Expressions (Syntactic Sugar)**
-let expressions are implemented as derived expressions and internally transformed into lambda applications:
+  let expressions are implemented as derived expressions and internally transformed into lambda applications:
 (let ((x 5)) (+ x 3))
 ⟶ ((lambda (x) (+ x 3)) 5)
 This simplifies the evaluator by reducing complexity in the core logic.
 
   **Global Environment**
-The evaluator initializes a global environment containing:
+  The evaluator initializes a global environment containing:
 - Primitive operations: +, -, *, /, =
 - Boolean constants:
 true → #t
 false → #f
 
   **Test Cases**
-    1) _Arithmetic_
+   1) _Arithmetic_
 (mini-eval '(+ 2 3) the-global-environment)
 ;; ⇒ 5
-    2) _Let Expression_
+   
+   2) _Let Expression_
 (mini-eval '(let ((x 5)) (+ x 3)) the-global-environment)
 ;; ⇒ 8
-    3) _Multiple Bindings_
+
+   3) _Multiple Bindings_
 (mini-eval '(let ((x 2) (y 3)) (* x y)) the-global-environment)
 ;; ⇒ 6
-    4) _Lexical Scoping (Closure Test)_
+
+   4) _Lexical Scoping (Closure Test)_
 (mini-eval
  '(begin
     (define (make-adder x)
@@ -78,7 +81,7 @@ false → #f
 ;; ⇒ 15
 
    **Key Concepts Demonstrated**
-This implementation demonstrates:
+  This implementation demonstrates:
 - The eval–apply cycle
 - How procedures capture their defining environment (closures)
 - The role of environments in variable scope resolution
@@ -95,13 +98,13 @@ This implementation demonstrates:
     _Optional_: Start the REPL
 (driver-loop)
 
-  **File Structure**
+ **File Structure** 
 CSC3311-Mini-Scheme/
 │
 ├── evaluator.rkt   # Full Mini-Scheme evaluator
 └── README.md       # Project documentation
 
-**Status of Lab Progression**
+ **Status of Lab Progression**
 ✔ Task 1: Core Evaluator
 ✔ Task 2: Apply Mechanism
 ✔ Task 3: Environment Model
@@ -110,7 +113,7 @@ CSC3311-Mini-Scheme/
 - All tasks completed successfully
 - Evaluator tested and verified
   
-**Conclusion**
+ **Conclusion**
 This project delivers a fully functional Mini-Scheme interpreter that faithfully implements key ideas from SICP. It demonstrates a solid understanding of:
 - Lexical scoping
 - Environment modeling
