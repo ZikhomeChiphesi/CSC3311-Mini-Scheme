@@ -12,8 +12,6 @@ SICP Laboratory Practical Submission
 
 ## Verification Questions — Model Answers
 
----
-
 ### 1. In the `add5` call, where is the value of `x` stored?
 
 The value of `x` is stored in the **environment frame created when the procedure `(make-adder x)` is evaluated**.
@@ -28,7 +26,6 @@ When `(add5 10)` is later evaluated:
 
 Therefore, `x` is stored in the **closure environment of the returned procedure**.
 
----
 
 ### 2. What happens in your environment if you try to `(set! z 10)` before defining `z`?
 
@@ -47,18 +44,15 @@ The evaluator searches all frames in the environment chain:
 
 Therefore, attempting to assign to an undefined variable results in an **unbound variable error**.
 
----
 
 ###  3. Modify your `eval-if` to support a “one-armed if” (optional else clause)
 
 The evaluator already supports a **one-armed if** through the following implementation:
 
-```scheme
 (define (if-alternative exp)
   (if (not (null? (cdddr exp)))
       (cadddr exp)
       false))
-```
 
 ### Behaviour:
 
@@ -67,21 +61,16 @@ The evaluator already supports a **one-armed if** through the following implemen
 
 #### Example:
 
-```scheme
 (if (> 5 3)
     10)
-```
 
 Result: `10`
 
-```scheme
 (if (< 5 3)
     10)
-```
 
 Result: `false`
 
----
 
 #### Summary
 
