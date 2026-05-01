@@ -1,14 +1,14 @@
-CSC3311 — Mini-Scheme Evaluator
+**CSC3311 — Mini-Scheme Evaluator**
 SICP Laboratory Practical Submission
 
-Group Members
+**Group Members**
 1. Zikhome Mphatso Chiphesi - 2023140048
 2. Franco Mwiinga - 2023055491
 3. Sunduzwayo Ngoma - 2023087805
-4. Emely Mangisha - 
-5. Lozindahba Moyo -
-6. Memory Mupotola -
-7. Samuel Musonda
+4. Emely Mangisha - 2023102162
+5. Lozindahba Moyo - 2023013283
+6. Memory Mupotola - 2023038111
+7. Samuel Musonda - 2023001285
 
 **Author**
 Zikhome Chiphesi
