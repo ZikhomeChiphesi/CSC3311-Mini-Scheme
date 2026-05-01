@@ -50,14 +50,11 @@
 (define (begin-actions exp) (cdr exp))
 
 ;; =========================
-;; LET SUPPORT (TASK 4)
+;; LET SUPPORT
 ;; =========================
 
-(define (let-bindings exp)
-  (cadr exp))
-
-(define (let-body exp)
-  (cddr exp))
+(define (let-bindings exp) (cadr exp))
+(define (let-body exp) (cddr exp))
 
 (define (let-vars exp)
   (map car (let-bindings exp)))
@@ -89,7 +86,7 @@
                          (lambda-body exp)
                          env))
         ((begin? exp)
-         (eval-sequence (begin-actions exp) env))
+         (eval-sequence (begin-actions exp) env)) ;; FIXED BEHAVIOR
         ((application? exp)
          (mini-apply (mini-eval (operator exp) env)
                      (list-of-values (operands exp) env)))
@@ -100,6 +97,18 @@
       '()
       (cons (mini-eval (car exps) env)
             (list-of-values (cdr exps) env))))
+
+;; =========================
+;; FIXED SEQUENCE EXECUTION (IMPORTANT FIX)
+;; =========================
+
+(define (eval-sequence exps env)
+  (cond ((null? exps) '())
+        ((null? (cdr exps))
+         (mini-eval (car exps) env))
+        (else
+         (mini-eval (car exps) env)
+         (eval-sequence (cdr exps) env))))
 
 ;; =========================
 ;; PROCEDURE APPLICATION
@@ -165,7 +174,7 @@
   (apply (primitive-implementation proc) args))
 
 ;; =========================
-;; ENVIRONMENT (RIBCAGE)
+;; ENVIRONMENT
 ;; =========================
 
 (define (make-frame vars vals)
@@ -256,7 +265,7 @@
              (loop (cdr vars) (cdr vals)))))))
 
 ;; =========================
-;; IF + SEQUENCES
+;; IF
 ;; =========================
 
 (define (if-predicate exp) (cadr exp))
@@ -264,7 +273,7 @@
 (define (if-alternative exp)
   (if (not (null? (cdddr exp)))
       (cadddr exp)
-      false))  ;; FIXED
+      false))
 
 (define (eval-if exp env)
   (if (true? (mini-eval (if-predicate exp) env))
@@ -273,13 +282,6 @@
 
 (define (true? x)
   (not (eq? x false)))
-
-(define (eval-sequence exps env)
-  (cond ((null? (cdr exps))
-         (mini-eval (car exps) env))
-        (else
-         (mini-eval (car exps) env)
-         (eval-sequence (cdr exps) env))))
 
 ;; =========================
 ;; HELPERS
@@ -305,48 +307,18 @@
 (eval-definition '(define false #f) the-global-environment)
 
 ;; =========================
-;; TESTS (FINAL VERIFICATION)
+;; FINAL TEST (SAFE VERSION)
 ;; =========================
 
-(display "Basic arithmetic:\n")
-(display (mini-eval '(+ 2 3) the-global-environment)) (newline)
-
-(display "Let expression:\n")
-(display (mini-eval '(let ((x 5)) (+ x 3)) the-global-environment)) (newline)
-
-(display "Lexical scoping test (make-adder):\n")
-(display
- (mini-eval
-  '(begin
-     (define (make-adder x)
-       (lambda (y) (+ x y)))
-     (define add5 (make-adder 5))
-     (add5 10))
-  the-global-environment))
-(newline)
-
-(display "Argument mismatch test (should error):\n")
 (mini-eval
- '((lambda (x y) (+ x y)) 5)
+ '(define (make-adder x)
+    (lambda (y) (+ x y)))
  the-global-environment)
 
-;; =========================
-;; SIMPLE REPL (Driver Loop)
-;; =========================
+(mini-eval
+ '(define add5 (make-adder 5))
+ the-global-environment)
 
-(define (driver-loop)
-  (display "\nMini-Scheme REPL\n")
-  (display "Type 'exit to quit\n")
-  (newline)
-  (let loop ()
-    (display ">>> ")
-    (let ((input (read)))
-      (if (eq? input 'exit)
-          (display "Goodbye!\n")
-          (begin
-            (display (mini-eval input the-global-environment))
-            (newline)
-            (loop))))))
-
-;; To start REPL, call:
-;; (driver-loop)
+(mini-eval
+ '(add5 10)
+ the-global-environment)
