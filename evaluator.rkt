@@ -133,7 +133,7 @@
 (define (procedure-environment p) (cadddr p))
 
 ;; =========================
-;; PRIMITIVES (TASK 5 FIXED)
+;; PRIMITIVES
 ;; =========================
 
 (define (make-primitive proc)
@@ -176,11 +176,8 @@
       (cons (make-frame vars vals) base-env)
       (error "Arguments mismatch -- EXTEND-ENVIRONMENT" vars vals)))
 
-(define (frame-variables frame)
-  (car frame))
-
-(define (frame-values frame)
-  (cdr frame))
+(define (frame-variables frame) (car frame))
+(define (frame-values frame) (cdr frame))
 
 ;; =========================
 ;; LOOKUP
@@ -267,7 +264,7 @@
 (define (if-alternative exp)
   (if (not (null? (cdddr exp)))
       (cadddr exp)
-      'false))
+      false))  ;; FIXED
 
 (define (eval-if exp env)
   (if (true? (mini-eval (if-predicate exp) env))
@@ -285,7 +282,7 @@
          (eval-sequence (cdr exps) env))))
 
 ;; =========================
-;; ENV HELPERS
+;; HELPERS
 ;; =========================
 
 (define (tagged-list? exp tag)
@@ -293,7 +290,7 @@
        (eq? (car exp) tag)))
 
 ;; =========================
-;; GLOBAL ENVIRONMENT (TASK 5 COMPLETE)
+;; GLOBAL ENVIRONMENT
 ;; =========================
 
 (define the-empty-environment '())
@@ -304,16 +301,52 @@
    (primitive-procedure-objects)
    the-empty-environment))
 
-;; add true/false
 (eval-definition '(define true #t) the-global-environment)
 (eval-definition '(define false #f) the-global-environment)
 
 ;; =========================
-;; TESTS
+;; TESTS (FINAL VERIFICATION)
 ;; =========================
 
-(mini-eval '(+ 2 3) the-global-environment)
-(mini-eval '(* 4 5) the-global-environment)
+(display "Basic arithmetic:\n")
+(display (mini-eval '(+ 2 3) the-global-environment)) (newline)
 
-(mini-eval '(let ((x 5)) (+ x 3)) the-global-environment)
-(mini-eval '(let ((x 2) (y 3)) (* x y)) the-global-environment)
+(display "Let expression:\n")
+(display (mini-eval '(let ((x 5)) (+ x 3)) the-global-environment)) (newline)
+
+(display "Lexical scoping test (make-adder):\n")
+(display
+ (mini-eval
+  '(begin
+     (define (make-adder x)
+       (lambda (y) (+ x y)))
+     (define add5 (make-adder 5))
+     (add5 10))
+  the-global-environment))
+(newline)
+
+(display "Argument mismatch test (should error):\n")
+(mini-eval
+ '((lambda (x y) (+ x y)) 5)
+ the-global-environment)
+
+;; =========================
+;; SIMPLE REPL (Driver Loop)
+;; =========================
+
+(define (driver-loop)
+  (display "\nMini-Scheme REPL\n")
+  (display "Type 'exit to quit\n")
+  (newline)
+  (let loop ()
+    (display ">>> ")
+    (let ((input (read)))
+      (if (eq? input 'exit)
+          (display "Goodbye!\n")
+          (begin
+            (display (mini-eval input the-global-environment))
+            (newline)
+            (loop))))))
+
+;; To start REPL, call:
+;; (driver-loop)
