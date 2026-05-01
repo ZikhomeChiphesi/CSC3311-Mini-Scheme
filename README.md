@@ -1,56 +1,73 @@
-📘 CSC3311 — Mini-Scheme Evaluator
+CSC3311 — Mini-Scheme Evaluator
 SICP Laboratory Practical Submission
-👨‍💻 Author
+
+Group Members
+1. Zikhome Mphatso Chiphesi - 2023140048
+2. Franco Mwiinga - 2023055491
+3. Sunduzwayo Ngoma - 2023087805
+4. Emely Mangisha - 
+5. Lozindahba Moyo -
+6. Memory Mupotola -
+7. Samuel Musonda
+
+**Author**
 Zikhome Chiphesi
-📌 Project Overview
+
+  **Project Overview**
 This project implements a Mini-Scheme evaluator in Racket using #lang sicp, based on concepts from Structure and Interpretation of Computer Programs (SICP), Chapter 4.1.
 The evaluator models the eval–apply cycle, supports lexical scoping, and implements a frame-based environment system, enabling the execution of core Scheme expressions.
-⚙️ Features Implemented
-🧠 Core Evaluator (mini-eval)
+
+  **Features Implemented**
+   1) _Core Evaluator (mini-eval)_
 The evaluator acts as a dispatcher that classifies and processes expressions. It supports:
-Self-evaluating expressions (numbers, strings, booleans)
-Variable lookup
-Quoted expressions (quote)
-Assignment (set!)
-Definitions (define)
-Conditionals (if, including one-armed if)
-Lambda expressions (lambda)
-Sequences (begin)
-Procedure applications
-🔁 Apply Mechanism (mini-apply)
+- Self-evaluating expressions (numbers, strings, booleans)
+- Variable lookup
+- Quoted expressions (quote)
+- Assignment (set!)
+- Definitions (define)
+- Conditionals (if, including one-armed if)
+- Lambda expressions (lambda)
+- Sequences (begin)
+- Procedure applications
+
+  2) _Apply Mechanism (mini-apply)_
 Handles procedure execution by distinguishing between:
-Primitive procedures (e.g. +, -, *, /, =)
-Compound procedures (user-defined functions)
+- Primitive procedures (e.g. +, -, *, /, =)
+- Compound procedures (user-defined functions)
 Ensures correct environment extension during function calls.
-🌳 Environment Model
+
+  **Environment Model**
 Implements a ribcage (frame-based) environment structure:
-extend-environment for creating new frames
-Variable lookup across environment chains
-Variable mutation (set!)
-Definition and binding (define)
-✅ Fully supports lexical scoping, where procedures retain access to the environment in which they were defined.
-🍬 Derived Expressions (Syntactic Sugar)
+- extend-environment for creating new frames
+- Variable lookup across environment chains
+- Variable mutation (set!)
+- Definition and binding (define)
+- Fully supports lexical scoping, where procedures retain access to the environment in which they were defined.
+
+  **Derived Expressions (Syntactic Sugar)**
 let expressions are implemented as derived expressions and internally transformed into lambda applications:
 (let ((x 5)) (+ x 3))
 ⟶ ((lambda (x) (+ x 3)) 5)
 This simplifies the evaluator by reducing complexity in the core logic.
-🌍 Global Environment
+
+  **Global Environment**
 The evaluator initializes a global environment containing:
-Primitive operations: +, -, *, /, =
-Boolean constants:
+- Primitive operations: +, -, *, /, =
+- Boolean constants:
 true → #t
 false → #f
-🧪 Test Cases
-🔢 Arithmetic
+
+  **Test Cases**
+    1) _Arithmetic_
 (mini-eval '(+ 2 3) the-global-environment)
 ;; ⇒ 5
-🍬 Let Expression
+    2) _Let Expression_
 (mini-eval '(let ((x 5)) (+ x 3)) the-global-environment)
 ;; ⇒ 8
-🔗 Multiple Bindings
+    3) _Multiple Bindings_
 (mini-eval '(let ((x 2) (y 3)) (* x y)) the-global-environment)
 ;; ⇒ 6
-🧠 Lexical Scoping (Closure Test)
+    4) _Lexical Scoping (Closure Test)_
 (mini-eval
  '(begin
     (define (make-adder x)
@@ -59,39 +76,45 @@ false → #f
     (add5 10))
  the-global-environment)
 ;; ⇒ 15
-📍 Key Concepts Demonstrated
+
+   **Key Concepts Demonstrated**
 This implementation demonstrates:
-The eval–apply cycle
-How procedures capture their defining environment (closures)
-The role of environments in variable scope resolution
-The separation between evaluation and application
-The use of syntactic transformation to simplify language design
-🚀 How to Run
-Open the project in DrRacket
-Ensure the language is set to:
-#lang sicp
-Load evaluator.rkt
-Evaluate expressions using:
+- The eval–apply cycle
+- How procedures capture their defining environment (closures)
+- The role of environments in variable scope resolution
+- The separation between evaluation and application
+- The use of syntactic transformation to simplify language design
+
+  **How to Run**
+1. Open the project in DrRacket
+2. Ensure the language is set to:
+  #lang sicp
+3. Load evaluator.rkt
+4. Evaluate expressions using:
 (mini-eval '<expression> the-global-environment)
-▶ Optional: Start the REPL
+    _Optional_: Start the REPL
 (driver-loop)
-📂 File Structure
+
+  **File Structure**
 CSC3311-Mini-Scheme/
 │
 ├── evaluator.rkt   # Full Mini-Scheme evaluator
 └── README.md       # Project documentation
-✅ Status
+
+**Status of Lab Progression**
 ✔ Task 1: Core Evaluator
 ✔ Task 2: Apply Mechanism
 ✔ Task 3: Environment Model
 ✔ Task 4: Derived Expressions (let)
 ✔ Task 5: Global Environment
-🎯 All tasks completed successfully
-🧪 Evaluator tested and verified
-🏁 Conclusion
+- All tasks completed successfully
+- Evaluator tested and verified
+  
+**Conclusion**
 This project delivers a fully functional Mini-Scheme interpreter that faithfully implements key ideas from SICP. It demonstrates a solid understanding of:
-Lexical scoping
-Environment modeling
-Functional abstraction
-Language evaluation mechanisms
+- Lexical scoping
+- Environment modeling
+- Functional abstraction
+- Language evaluation mechanisms
+
 The evaluator serves as a foundational model for understanding how programming languages are interpreted.
